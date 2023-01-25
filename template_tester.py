@@ -11,7 +11,7 @@ print("Inside Python script")
 parser = argparse.ArgumentParser(
     prog='Compiler',
     description='''Compile and run a c++ program''',
-    epilog="None ya buisness..."
+    epilog="None ya bizz..."
 )
 
 parser.add_argument('folder', help='Relative path to folder of cpp files to compile and run')
@@ -29,10 +29,14 @@ files = [x.name for x in source.iterdir() if x.is_file()]
 
 for i, file in enumerate(files):
     folder_file = f"{folder}/{file}"
-    print(f"folder_file = {folder_file}")
+    print(f"student file location= {folder_file}")
     exec_loc = "a.out"
-    print(f"exec_loc = {exec_loc}")
-    subprocess.call(["g++", folder_file])
+    if compiler_type == 1:
+        subprocess.call(["g++", folder_file])
+    elif compiler_type == 2:
+        subprocess.call(["cl", folder_file])
+    else:
+        raise Exeption("You Messed Up :( invalid compiler type.")
     output = subprocess.run(f"./{exec_loc}", capture_output=True, shell=True)
     print(f"stdout_{i} : {output.stdout.decode()}")
     print(f"stderr: {output.stderr.decode()}")
