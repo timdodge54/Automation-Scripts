@@ -1,10 +1,13 @@
 # Scripts
 
 ## Purpose
-	* Take student submitted code and automate the grading 
-	* It compiles the code extracts the input for the files from .txt files and runs the code with the input
-	* input is of the form ```./grading <folder of students code> <folder of input files> <compiler options>
-	* Compilor options are 1: g++ 2: visual studio
+* Take student submitted code and automate the grading 
+* It compiles the code extracts the input for the files from .txt files and runs the code with the input
+* input is of the form 
+```bash ./grading <folder of students code> <folder of input files> <compiler options>```
+* Compilor options are 1: g++ 2: visual studio
+
+
 ## Example output
 ```
 GRADING SCRIPT
