@@ -2,8 +2,8 @@
 
 """Script for compiling and running all student submitted c and c++ files.
 
-command line script marked as an executable so run with the following command:
-    ./template_tester.py <folder> <input_path> <compiler_type>
+Command line script marked as an executable so run with the following command:
+    ./grading_script <folder> <input_path> <compiler_type>
 
 Args:
     folder (str): Relative path to folder of cpp files to compile and run
@@ -14,7 +14,7 @@ Args:
 Returns:
 
 """
-print("ARGUMENT PARSER\n\n")
+print("GRADING SCRIPT\n\n")
 exceeded_limit = {}
 comp_scores = {}
 run_scores = {}
@@ -26,7 +26,7 @@ import subprocess
 from pathlib import Path
 # Create the argument parser
 parser = argparse.ArgumentParser(
-    prog="testing_automation_MASTER.py",
+    prog="grading_script",
     description="""Script for compiling and running all student submitted c and c++ files.""",
     epilog="Author: Timothy Dodge",
 )
