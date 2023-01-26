@@ -3,11 +3,13 @@
 #include <string.h>
 #include <stdio.h>
 using namespace std;
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-	(int i = 0; i < 5; i++)
-	{
-		cout << i << "\n";
-	}
+  cout << "Test file 1\n";
+  cout << "argc = " << argc << "\n";
+  for (int i = 1; i < argc; i++)
+  {
+	cout << i << "\n";
+  }
+  return 0;
 }
-

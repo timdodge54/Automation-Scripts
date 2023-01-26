@@ -1,0 +1,154 @@
+#!/usr/bin/env python3
+
+"""Script for compiling and running all student submitted c and c++ files.
+
+command line script marked as an executable so run with the following command:
+    ./template_tester.py <folder> <input_path> <compiler_type>
+
+Args:
+    folder (str): Relative path to folder of cpp files to compile and run
+    input_path (str): Relative Path of the input files (in the form Input***.txt)
+    compiler type (int): Indicate the compiler you would like to use 
+        (1 = CygWin and gcc, 2 = VisualStudio and cl)
+
+Returns:
+
+"""
+print("ARGUMENT PARSER\n\n")
+exceeded_limit = {}
+comp_scores = {}
+run_scores = {}
+correct_scores = {}
+
+import argparse
+import os
+import subprocess
+from pathlib import Path
+# Create the argument parser
+parser = argparse.ArgumentParser(
+    prog="testing_automation_MASTER.py",
+    description="""Script for compiling and running all student submitted c and c++ files.""",
+    epilog="Author: Timothy Dodge",
+)
+
+# add positional command line arguments
+parser.add_argument(
+    "folder", help="Relative path to folder of cpp files to compile and run"
+)
+parser.add_argument(
+    "input_path", help="Path of the input files (in the form Input***.txt): "
+)
+parser.add_argument(
+    "compiler_type",
+    help="Indicate the compiler you would like to use (1 = CygWin and gcc, 2 = VisualStudio and cl)",
+)
+
+
+# parse args and assign to variables
+args = parser.parse_args()
+folder = args.folder
+input_path = args.input_path
+try:
+    compiler_type = int(args.compiler_type)
+except ValueError:
+    print("Invalid compiler type")
+    exit()
+
+# Get the input files
+source_input_files = Path(input_path)
+input_files = [
+    f"{input_path}/{x.name}"
+    for x in source_input_files.iterdir()
+    if x.is_file() and x.name.endswith(".txt")
+]
+
+
+# Get the student files
+source_student_files = Path(folder)
+student_files = [
+    x.name
+    for x in source_student_files.iterdir()
+    if x.is_file() and (x.name.endswith(".cpp") or x.name.endswith(".c"))
+]
+
+# Loop through the student files.
+for i, file in enumerate(student_files):
+    folder_file = f"{folder}/{file}"
+    # Compile the student file.
+    print(f"|-------------------------------------------------------"
+          "-------------------------------|")
+    print(f"\nFILENAME = {folder_file}\n\n")
+    if compiler_type == 1:
+        output_comp = subprocess.run(["g++", folder_file], capture_output=True)
+        if output_comp.returncode != 0:
+            print(f"\tCompilation failed for {file}")
+        exec_loc = "a.out"
+    elif compiler_type == 2:
+        output_comp = subprocess.run(["cl", folder_file], capture_output=True)
+        if output_comp.returncode != 0:
+            print(f"\tCompilation failed for {file}")
+        exec_loc = f"{file[:-2]}.exe"
+    else:
+        raise Exception("You Messed Up :( invalid compiler type.")
+
+    # Run word count on the student file.
+    wc_results = subprocess.run(["wc", "-l", folder_file], capture_output=True)
+
+    # If the longest line in the student file is greater than 80,
+    #   add to the exceeded limit dictionary.
+    longest_line = int(wc_results.stdout.decode().split()[0])
+    if longest_line > 80:
+        exceeded_limit[file] = f"Longest line length: {longest_line}"
+        continue
+    else:
+        exceeded_limit[file] = "Did not exceed line limit."
+    # Run the student file with the input files.
+    for j, input_file in enumerate(input_files):
+        with open(input_file, "r") as input_data:
+            read_data = input_data.read().splitlines()
+            # Input the input file into the student file and capture output
+            #  and set a time limit of 2 seconds.
+            run_string = f"./{exec_loc}"
+            for line in read_data:
+                run_string += f" {line}"
+            output = subprocess.run(
+                [run_string], capture_output=True, shell=True, timeout=2
+            )
+            # Print the stdout and stderr of the student file.
+            print("STANDARD OUTPUT: -----------------")
+            print(f"\n{output.stdout.decode()}")
+            print("STANDARD ERROR: ------------------")
+            print(f"\n{output.stderr.decode()}")
+
+            # Input score for the student file.
+            comp_scores[file] = input("Compilation without errors:")
+            run_scores[file] = input("Program ran without errors:")
+            correct_scores[file] = input("Program output correct:")
+            # Remove the executable file.
+            if compiler_type == 1:
+                os.remove("a.out")
+            if compiler_type == 2:
+                os.remove(f"{file[:-2]}.exe")
+    print(f"|-------------------------------------------------------"
+          "-------------------------------|\n\n")
+
+print(f"||||||||||||||||||||||||||||||||||||||||||||||||||"
+        "||||||||||||||||||||||||||||||||||||||")
+print("\nScores and comments: \n")
+print(f"||||||||||||||||||||||||||||||||||||||||||||||||||"
+        "||||||||||||||||||||||||||||||||||||||")
+print("\n\n")
+
+for file in student_files:
+    print(f"|-------------------------------------------------------"
+          "-------------------------------|")
+    print(f"\tFilename: {file}")
+    print(f"|-------------------------------------------------------"
+          "-------------------------------|")
+    print(f"\t\tCompilation without errors: {comp_scores[file]}")
+    print(f"\t\tProgram ran without errors: {run_scores[file]}")
+    print(f"\t\tProgram output correct: {correct_scores[file]}")
+    print(f"\t\t80 character limit information: {exceeded_limit[file]}")
+    print("\n\n")
+
+input("Press Enter to exit...")
