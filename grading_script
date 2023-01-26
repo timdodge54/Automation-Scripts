@@ -27,7 +27,8 @@ from pathlib import Path
 # Create the argument parser
 parser = argparse.ArgumentParser(
     prog="grading_script",
-    description="""Script for compiling and running all student submitted c and c++ files.""",
+    description="""Script for compiling 
+    and running all student submitted c and c++ files.""",
     epilog="Author: Timothy Dodge",
 )
 
@@ -38,9 +39,11 @@ parser.add_argument(
 parser.add_argument(
     "input_path", help="Path of the input files (in the form Input***.txt): "
 )
+help_input = "Indicate the compiler you would like to use (1 = CygWin and gcc,"
+help_input += "2 = VisualStudio and cl)" 
 parser.add_argument(
     "compiler_type",
-    help="Indicate the compiler you would like to use (1 = CygWin and gcc, 2 = VisualStudio and cl)",
+    help= help_input,
 )
 
 
@@ -131,9 +134,9 @@ for i, file in enumerate(student_files):
             print("Recorded Score: ------------------")
 
             # Input score for the student file.
-            comp_scores[file] = input("Compilation without errors:")
-            run_scores[file] = input("Program ran without errors:")
-            correct_scores[file] = input("Program output correct:")
+            comp_scores[file] = input("Compilation without errors: ")
+            run_scores[file] = input("Program ran without errors: ")
+            correct_scores[file] = input("Program output correct: ")
             # Remove the executable file.
             if os.path.exists(exec_loc):
                 if compiler_type == 1:
