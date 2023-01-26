@@ -77,30 +77,39 @@ for i, file in enumerate(student_files):
     # Compile the student file.
     print(f"|-------------------------------------------------------"
           "-------------------------------|")
-    print(f"\nFILENAME = {folder_file}\n\n")
+    print(f"\nFILENAME = {folder_file}\n")
     if compiler_type == 1:
-        output_comp = subprocess.run(["g++", folder_file], capture_output=True)
-        if output_comp.returncode != 0:
-            print(f"\tCompilation failed for {file}")
         exec_loc = "a.out"
+        if os.path.exists(exec_loc):
+            os.remove(exec_loc)
+        output_comp = subprocess.run(["g++", folder_file], capture_output=True)
+        print("COMPILATION OUTPUT ----------------------------\n")
+        if output_comp.returncode != 0:
+            print(f"COMPILATION FAILED FOR {file}\n")
+        else:
+            print(f"COMPILATION SUCCESSFUL FOR {file}\n")
     elif compiler_type == 2:
         output_comp = subprocess.run(["cl", folder_file], capture_output=True)
         if output_comp.returncode != 0:
-            print(f"\tCompilation failed for {file}")
+            print(f"COMPILATION FAILED FOR {file}\n")
+        else:
+            print(f"COMPILATION SUCCESSFUL FOR {file}\n")
         exec_loc = f"{file[:-2]}.exe"
     else:
         raise Exception("You Messed Up :( invalid compiler type.")
 
     # Run word count on the student file.
-    wc_results = subprocess.run(["wc", "-l", folder_file], capture_output=True)
+    wc_results = subprocess.run(["wc", "-L", folder_file], capture_output=True)
 
     # If the longest line in the student file is greater than 80,
     #   add to the exceeded limit dictionary.
     longest_line = int(wc_results.stdout.decode().split()[0])
     if longest_line > 80:
-        exceeded_limit[file] = f"Longest line length: {longest_line}"
-        continue
+        error_message = f"Line Length Exceeded: {longest_line}\n"
+        exceeded_limit[file] = f"Longest Line Length: {longest_line}"
+        print(f"{error_message}")
     else:
+        print(f"Did not exceed line limit.\n")
         exceeded_limit[file] = "Did not exceed line limit."
     # Run the student file with the input files.
     for j, input_file in enumerate(input_files):
@@ -119,16 +128,18 @@ for i, file in enumerate(student_files):
             print(f"\n{output.stdout.decode()}")
             print("STANDARD ERROR: ------------------")
             print(f"\n{output.stderr.decode()}")
+            print("Recorded Score: ------------------")
 
             # Input score for the student file.
             comp_scores[file] = input("Compilation without errors:")
             run_scores[file] = input("Program ran without errors:")
             correct_scores[file] = input("Program output correct:")
             # Remove the executable file.
-            if compiler_type == 1:
-                os.remove("a.out")
-            if compiler_type == 2:
-                os.remove(f"{file[:-2]}.exe")
+            if os.path.exists(exec_loc):
+                if compiler_type == 1:
+                    os.remove("a.out")
+                if compiler_type == 2:
+                    os.remove(f"{file[:-2]}.exe")
     print(f"|-------------------------------------------------------"
           "-------------------------------|\n\n")
 
